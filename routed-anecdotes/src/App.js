@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route, Link, Redirect, useRouteMatch } from 'react-router-dom'
+import { useField } from './hooks'
 
 const Menu = () => {
   const padding = {
@@ -25,7 +26,9 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote) => (
-        <li key={anecdote.id}>{anecdote.content}</li>
+        <li key={anecdote.id}>
+          <Link to={'/anecdotes/' + anecdote.id}>{anecdote.content}</Link>
+        </li>
       ))}
     </ul>
   </div>
@@ -68,19 +71,29 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
+  const [redirect, setRedirect] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     })
+    props.setNotification(`a new anecdote ${content.properties.value} created!`)
+    setRedirect(true)
   }
+  const handleReset = () => {
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
+  if (redirect) return <Redirect to="/" />
 
   return (
     <div>
@@ -88,35 +101,41 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <input {...content.properties} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          <input {...author.properties} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          <input {...info.properties} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>{' '}
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
 }
 
+const Anecdote = ({ anecdoteById }) => {
+  const anecdote = anecdoteById()
+  if (anecdote)
+    return (
+      <div>
+        <h2>{anecdote.content}</h2>
+        <p>has {anecdote.votes} votes</p>
+        <p>
+          for more info see <a href={anecdote.info}>{anecdote.info}</a>
+        </p>
+      </div>
+    )
+  return <Redirect to="/" />
+}
+
 const App = () => {
+  const match = useRouteMatch('/anecdotes/:id')
+
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -136,13 +155,18 @@ const App = () => {
 
   const [notification, setNotification] = useState('')
 
+  if (notification !== '') {
+    setTimeout(() => {
+      setNotification('')
+    }, 10000)
+  }
+
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     setAnecdotes(anecdotes.concat(anecdote))
   }
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id)
-
   const vote = (id) => {
     const anecdote = anecdoteById(id)
 
@@ -158,15 +182,19 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <p>{notification}</p>
       <Switch>
-        <Route to="/about">
-          <About />
-        </Route>
         <Route exact path="/">
           <AnecdoteList anecdotes={anecdotes} />
         </Route>
-        <Route to="/create">
-          <CreateNew addNew={addNew} />
+        <Route path="/create">
+          <CreateNew addNew={addNew} setNotification={setNotification} />
+        </Route>
+        <Route path="/about">
+          <About />{' '}
+        </Route>
+        <Route path="/anecdotes/:id">
+          <Anecdote anecdoteById={() => anecdoteById(match.params.id)} />
         </Route>
       </Switch>
       <Footer />
