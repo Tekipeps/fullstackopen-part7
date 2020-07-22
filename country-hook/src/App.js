@@ -24,9 +24,9 @@ const useCountry = (name) => {
         const response = await axios.get(
           `https://restcountries.eu/rest/v2/name/${name}`
         )
-        setCountry(response)
+        setCountry({ ...response, found: true })
       } catch (error) {
-        setCountry(null)
+        setCountry({ found: false })
       }
     }
     getCountry()
@@ -36,6 +36,9 @@ const useCountry = (name) => {
 
 const Country = ({ country }) => {
   if (!country) {
+    return null
+  }
+  if (!country.found) {
     return <p>... not found</p>
   }
   return (
@@ -66,7 +69,7 @@ const App = () => {
     <div>
       <form onSubmit={fetch}>
         <input {...nameInput} />
-        <button>find</button>
+        <button type="submit">find</button>
       </form>
 
       <Country country={country} />
