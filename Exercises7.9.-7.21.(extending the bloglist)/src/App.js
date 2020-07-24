@@ -4,7 +4,7 @@ import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import { Link, Switch, Route } from 'react-router-dom'
+import { Link, Switch, Route, useRouteMatch } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, deleteBlog, createBlog } from './reducers/blogReducer'
 import {
@@ -13,12 +13,15 @@ import {
   logoutUser,
 } from './reducers/userReducer'
 import UsersView from './components/UsersView'
+import SingleUserView from './components/SingleUserView'
 
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const blogFormRef = useRef()
+
+  const match = useRouteMatch('/users/:id')
 
   const user = useSelector((state) => state.user)
   const blogs = useSelector((state) => state.blogs).sort(
@@ -51,6 +54,11 @@ const App = () => {
     dispatch(deleteBlog(blog, user))
   }
 
+  const userById = (id) => {
+    const blog = blogs.find((blog) => blog.user.id === id)
+    if (!blog) return null
+    return blog.user
+  }
   if (user === null) {
     return (
       <div>
@@ -103,6 +111,9 @@ const App = () => {
               user={user}
             />
           ))}
+        </Route>
+        <Route path="/users/:id">
+          <SingleUserView userById={() => userById(match.params.id)} />
         </Route>
         <Route path="/users">
           <UsersView />

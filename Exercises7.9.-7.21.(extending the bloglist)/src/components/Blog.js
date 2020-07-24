@@ -9,14 +9,9 @@ const Blog = ({ user, blog, handleDelete }) => {
 
   const showWhenVisible = { display: visible ? '' : 'none' }
 
-  const Like = () => {
-    dispatch(likeBlog(blog))
-  }
-
   const showDelete =
     blog.user.username === user.username ? { display: '' } : { display: 'none' }
 
-  // console.log(blog);
   return (
     <div className="blog">
       <p className="notToggled">
@@ -37,7 +32,10 @@ const Blog = ({ user, blog, handleDelete }) => {
         <div>
           likes {blog.likes}
           <span>
-            <button className="likeButton" onClick={() => Like()}>
+            <button
+              className="likeButton"
+              onClick={() => dispatch(likeBlog(blog))}
+            >
               like
             </button>
           </span>
