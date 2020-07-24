@@ -16,7 +16,7 @@ const App = () => {
   const blogFormRef = useRef()
 
   useEffect(() => {
-    const initailBlogs = async () => {
+    const initialBlogs = async () => {
       try {
         const blogs = await blogService.getAll()
         setBlogs(blogs.sort((a, b) => b.likes - a.likes))
@@ -24,7 +24,7 @@ const App = () => {
         console.log(error.response)
       }
     }
-    initailBlogs()
+    initialBlogs()
   }, [])
 
   useEffect(() => {
