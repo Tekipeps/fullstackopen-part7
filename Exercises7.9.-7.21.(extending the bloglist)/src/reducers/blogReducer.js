@@ -22,26 +22,58 @@ export const initializeBlogs = () => {
 
 export const createBlog = (newBlog, user) => {
   return async (dispatch) => {
-    blogService.setToken(user.token)
-    const blog = await blogService.create(newBlog)
-    dispatch({
-      type: 'CREATE_BLOG',
-      data: blog,
-    })
+    try {
+      blogService.setToken(user.token)
+      const blog = await blogService.create(newBlog)
+      dispatch({
+        type: 'CREATE_BLOG',
+        data: blog,
+      })
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        data: { type: 'success', message: `created ${newBlog.title}` },
+      })
+    } catch (error) {
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        data: { type: 'error', message: error.response.data.error },
+      })
+    }
+    setTimeout(() => {
+      dispatch({
+        type: 'REMOVE_NOTIFICATION',
+      })
+    }, 5000)
   }
 }
 
 export const deleteBlog = (blog, user) => {
   return async (dispatch) => {
-    const choice = window.confirm(`Delete ${blog.title}`)
-    if (choice) {
-      blogService.setToken(user.token)
-      await blogService.remove(blog.id)
+    try {
+      const choice = window.confirm(`Delete ${blog.title}`)
+      if (choice) {
+        blogService.setToken(user.token)
+        await blogService.remove(blog.id)
+        dispatch({
+          type: 'DELETE_BLOG',
+          data: blog,
+        })
+        dispatch({
+          type: 'SET_NOTIFICATION',
+          data: { type: 'success', message: `deleted ${blog.title}` },
+        })
+      }
+    } catch (error) {
       dispatch({
-        type: 'DELETE_BLOG',
-        data: blog,
+        type: 'SET_NOTIFICATION',
+        data: { type: 'error', message: error.response.data.error },
       })
     }
+    setTimeout(() => {
+      dispatch({
+        type: 'REMOVE_NOTIFICATION',
+      })
+    }, 5000)
   }
 }
 

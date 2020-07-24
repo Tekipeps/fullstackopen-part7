@@ -6,21 +6,12 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { Link, Switch, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import {
-  initializeBlogs,
-  deleteBlog,
-  likeBlog,
-  createBlog,
-} from './reducers/blogReducer'
+import { initializeBlogs, deleteBlog, createBlog } from './reducers/blogReducer'
 import {
   checkLoggedInUser,
   loginUser,
   logoutUser,
 } from './reducers/userReducer'
-import {
-  setNotification,
-  removeNotification,
-} from './reducers/notificationReducer'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -29,7 +20,9 @@ const App = () => {
   const blogFormRef = useRef()
 
   const user = useSelector((state) => state.user)
-  const blogs = useSelector((state) => state.blogs)
+  const blogs = useSelector((state) => state.blogs).sort(
+    (a, b) => b.likes - a.likes
+  )
   const notification = useSelector((state) => state.notification)
   const dispatch = useDispatch()
 
@@ -49,31 +42,12 @@ const App = () => {
   }
 
   const newBlog = (blog) => {
-    try {
-      dispatch(createBlog(blog, user))
-      blogFormRef.current.toggleVisibility()
-      dispatch(setNotification('success', `created ${blog.title}`))
-    } catch (error) {
-      dispatch(setNotification('error', `${error.response.data.error}`))
-    }
-    setTimeout(() => {
-      dispatch(removeNotification())
-    }, 5000)
-  }
-  const handleLike = (blog) => {
-    dispatch(likeBlog(blog))
+    dispatch(createBlog(blog, user))
+    blogFormRef.current.toggleVisibility()
   }
 
   const handleDelete = (blog) => {
-    try {
-      dispatch(deleteBlog(blog, user))
-      dispatch(setNotification('success', `deleted ${blog.title}`))
-    } catch (error) {
-      dispatch(setNotification('error', `${error.response.data.error}`))
-    }
-    setTimeout(() => {
-      dispatch(removeNotification())
-    }, 5000)
+    dispatch(deleteBlog(blog, user))
   }
 
   const userList = Object.entries(
@@ -134,7 +108,6 @@ const App = () => {
               key={blog.id}
               blog={blog}
               handleDelete={handleDelete}
-              handleLike={handleLike}
               user={user}
             />
           ))}
@@ -151,7 +124,9 @@ const App = () => {
             <tbody>
               {userList.map((list) => (
                 <tr key={list.user}>
-                  <td>{list.user}</td>
+                  <td>
+                    <Link to="/users/">{list.user}</Link>
+                  </td>
                   <td>{list.blogs}</td>
                 </tr>
               ))}

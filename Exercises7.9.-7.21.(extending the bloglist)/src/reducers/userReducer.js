@@ -2,12 +2,19 @@ import loginService from '../services/login'
 
 export const loginUser = (credentials) => {
   return async (dispatch) => {
-    const user = await loginService.login(credentials)
-    window.localStorage.setItem('loggedInUser', JSON.stringify(user))
-    dispatch({
-      type: 'SET_USER',
-      data: user,
-    })
+    try {
+      const user = await loginService.login(credentials)
+      window.localStorage.setItem('loggedInUser', JSON.stringify(user))
+      dispatch({
+        type: 'SET_USER',
+        data: user,
+      })
+    } catch (error) {
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        data: { type: 'error', message: error.response.data.error },
+      })
+    }
   }
 }
 export const checkLoggedInUser = () => {

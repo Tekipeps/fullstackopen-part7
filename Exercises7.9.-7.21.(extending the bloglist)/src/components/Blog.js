@@ -1,24 +1,20 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { likeBlog } from '../reducers/blogReducer'
 
-const Blog = (props) => {
-  const [blog, setBlog] = useState(props.blog)
+const Blog = ({ user, blog, handleDelete }) => {
   const [visible, setVisible] = useState(false)
+  const dispatch = useDispatch()
 
   const showWhenVisible = { display: visible ? '' : 'none' }
 
   const Like = () => {
-    const liked = props.handleLike({
-      ...blog,
-      likes: blog.likes + 1,
-    })
-    if (liked) setBlog({ ...blog, likes: blog.likes + 1 })
+    dispatch(likeBlog(blog))
   }
 
   const showDelete =
-    blog.user.username === props.user.username
-      ? { display: '' }
-      : { display: 'none' }
+    blog.user.username === user.username ? { display: '' } : { display: 'none' }
 
   // console.log(blog);
   return (
@@ -50,7 +46,7 @@ const Blog = (props) => {
         <button
           className="deleteButton"
           style={showDelete}
-          onClick={() => props.handleDelete(blog)}
+          onClick={() => handleDelete(blog)}
         >
           delete
         </button>
