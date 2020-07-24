@@ -3,6 +3,7 @@ import loginService from '../services/login'
 export const loginUser = (credentials) => {
   return async (dispatch) => {
     const user = await loginService.login(credentials)
+    window.localStorage.setItem('loggedInUser', JSON.stringify(user))
     dispatch({
       type: 'SET_USER',
       data: user,
@@ -18,9 +19,14 @@ export const checkLoggedInUser = () => {
       data: user,
     }
   }
+  return {
+    type: 'SET_USER',
+    data: null,
+  }
 }
 
 export const logoutUser = () => {
+  window.localStorage.clear()
   return {
     type: 'REMOVE_USER',
   }

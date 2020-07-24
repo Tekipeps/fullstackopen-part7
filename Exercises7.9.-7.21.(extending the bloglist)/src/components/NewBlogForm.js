@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const NewBlogForm = ({ createBlog }) => {
+const NewBlogForm = ({ newBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   const handleNewBlog = (event) => {
     event.preventDefault()
-    createBlog({ title, author, url })
+    newBlog({ title, author, url })
     setTitle('')
     setAuthor('')
     setUrl('')
@@ -53,7 +53,7 @@ const NewBlogForm = ({ createBlog }) => {
 }
 
 NewBlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired,
+  newBlog: PropTypes.func.isRequired,
 }
 
 export default NewBlogForm

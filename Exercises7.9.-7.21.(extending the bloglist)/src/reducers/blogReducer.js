@@ -20,6 +20,31 @@ export const initializeBlogs = () => {
   }
 }
 
+export const createBlog = (newBlog, user) => {
+  return async (dispatch) => {
+    blogService.setToken(user.token)
+    const blog = await blogService.create(newBlog)
+    dispatch({
+      type: 'CREATE_BLOG',
+      data: blog,
+    })
+  }
+}
+
+export const deleteBlog = (blog, user) => {
+  return async (dispatch) => {
+    const choice = window.confirm(`Delete ${blog.title}`)
+    if (choice) {
+      blogService.setToken(user.token)
+      await blogService.remove(blog.id)
+      dispatch({
+        type: 'DELETE_BLOG',
+        data: blog,
+      })
+    }
+  }
+}
+
 const blogReducer = (state = [], action) => {
   switch (action.type) {
     case 'LIKE_BLOG':
@@ -28,6 +53,10 @@ const blogReducer = (state = [], action) => {
       )
     case 'INIT_BLOGS':
       return action.data
+    case 'CREATE_BLOG':
+      return [...state, action.data]
+    case 'DELETE_BLOG':
+      return state.filter((blog) => blog.id !== action.data.id)
     default:
       return state
   }
