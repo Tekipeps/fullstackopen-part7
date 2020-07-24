@@ -14,6 +14,7 @@ import {
 } from './reducers/userReducer'
 import UsersView from './components/UsersView'
 import SingleUserView from './components/SingleUserView'
+import SingleBlogView from './components/SingleBlogView'
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -21,7 +22,8 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const match = useRouteMatch('/users/:id')
+  const userMatch = useRouteMatch('/users/:id')
+  const blogMatch = useRouteMatch('/blogs/:id')
 
   const user = useSelector((state) => state.user)
   const blogs = useSelector((state) => state.blogs).sort(
@@ -59,6 +61,12 @@ const App = () => {
     if (!blog) return null
     return blog.user
   }
+
+  const blogById = (id) => {
+    const blog = blogs.find((blog) => blog.id === id)
+    return blog
+  }
+
   if (user === null) {
     return (
       <div>
@@ -113,10 +121,13 @@ const App = () => {
           ))}
         </Route>
         <Route path="/users/:id">
-          <SingleUserView userById={() => userById(match.params.id)} />
+          <SingleUserView userById={() => userById(userMatch.params.id)} />
         </Route>
         <Route path="/users">
           <UsersView />
+        </Route>
+        <Route path="/blogs/:id">
+          <SingleBlogView blogById={() => blogById(blogMatch.params.id)} />
         </Route>
       </Switch>
     </div>

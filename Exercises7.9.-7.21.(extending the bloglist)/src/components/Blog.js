@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
 import { likeBlog } from '../reducers/blogReducer'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ user, blog, handleDelete }) => {
   const [visible, setVisible] = useState(false)
@@ -15,7 +16,9 @@ const Blog = ({ user, blog, handleDelete }) => {
   return (
     <div className="blog">
       <p className="notToggled">
-        <span className="title">{blog.title}</span>{' '}
+        <span className="title">
+          <Link to={'/blogs/' + blog.id}>{blog.title}</Link>
+        </span>{' '}
         <span className="author">{blog.author}</span>
         <span>
           <button
