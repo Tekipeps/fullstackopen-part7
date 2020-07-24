@@ -4,7 +4,7 @@ import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-
+import { Link, Switch, Route } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   initializeBlogs,
@@ -76,6 +76,15 @@ const App = () => {
     }, 5000)
   }
 
+  const userList = Object.entries(
+    blogs.reduce((acc, curr) => {
+      acc[curr.user.username] = (acc[curr.user.username] || 0) + 1
+      return acc
+    }, {})
+  ).map(([user, blogs]) => ({ user, blogs }))
+
+  console.log(userList)
+
   if (user === null) {
     return (
       <div>
@@ -105,20 +114,51 @@ const App = () => {
           Logout
         </button>
       </p>
-      <h2>create new</h2>
-      <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-        <NewBlogForm newBlog={newBlog} />
-      </Togglable>
+      <div>
+        <Link to="/" style={{ padding: '10px' }}>
+          home
+        </Link>
+        <Link to="/users" style={{ padding: '10px' }}>
+          users
+        </Link>
+      </div>
+      <Switch>
+        <Route exact path="/">
+          <h2>create new</h2>
+          <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+            <NewBlogForm newBlog={newBlog} />
+          </Togglable>
 
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleDelete={handleDelete}
-          handleLike={handleLike}
-          user={user}
-        />
-      ))}
+          {blogs.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              handleDelete={handleDelete}
+              handleLike={handleLike}
+              user={user}
+            />
+          ))}
+        </Route>
+        <Route path="/users">
+          <h2>Users</h2>
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>blogs created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userList.map((list) => (
+                <tr key={list.user}>
+                  <td>{list.user}</td>
+                  <td>{list.blogs}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Route>
+      </Switch>
     </div>
   )
 }
