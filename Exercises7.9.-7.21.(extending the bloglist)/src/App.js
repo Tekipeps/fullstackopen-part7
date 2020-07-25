@@ -7,7 +7,7 @@ import Togglable from './components/Togglable'
 import { Link, Switch, Route, useRouteMatch } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, deleteBlog, createBlog } from './reducers/blogReducer'
-import { Navbar, Nav } from 'react-bootstrap'
+import { Navbar, Nav, Button } from 'react-bootstrap'
 import {
   checkLoggedInUser,
   loginUser,
@@ -99,13 +99,13 @@ const App = () => {
               <em>{user.username} logged in</em>
             </Nav.Link>
             <Nav.Link href="#" as="span">
-              <button
+              <Button
                 onClick={() => {
                   dispatch(logoutUser())
                 }}
               >
                 Logout
-              </button>
+              </Button>
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
