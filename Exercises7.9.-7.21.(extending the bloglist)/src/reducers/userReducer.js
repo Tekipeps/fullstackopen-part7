@@ -15,6 +15,11 @@ export const loginUser = (credentials) => {
         data: { type: 'error', message: error.response.data.error },
       })
     }
+    setTimeout(() => {
+      dispatch({
+        type: 'REMOVE_NOTIFICATION',
+      })
+    }, 5000)
   }
 }
 export const checkLoggedInUser = () => {

@@ -46,6 +46,28 @@ export const createBlog = (newBlog, user) => {
     }, 5000)
   }
 }
+export const commentBlog = ({ id, user, comment }) => {
+  return async (dispatch) => {
+    try {
+      blogService.setToken(user.token)
+      await blogService.comment(id, comment)
+      dispatch({
+        type: 'COMMENT_BLOG',
+        data: { id, comment },
+      })
+    } catch (error) {
+      dispatch({
+        type: 'SET_NOTIFICATION',
+        data: { type: 'error', message: error.response.data.error },
+      })
+    }
+    setTimeout(() => {
+      dispatch({
+        type: 'REMOVE_NOTIFICATION',
+      })
+    }, 5000)
+  }
+}
 
 export const deleteBlog = (blog, user) => {
   return async (dispatch) => {
@@ -89,6 +111,12 @@ const blogReducer = (state = [], action) => {
       return [...state, action.data]
     case 'DELETE_BLOG':
       return state.filter((blog) => blog.id !== action.data.id)
+    case 'COMMENT_BLOG':
+      return state.map((blog) =>
+        blog.id === action.data.id
+          ? { ...blog, comments: [...blog.comments, action.data.comment] }
+          : blog
+      )
     default:
       return state
   }

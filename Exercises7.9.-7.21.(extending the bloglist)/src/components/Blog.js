@@ -1,64 +1,18 @@
-import React, { useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
-import { likeBlog } from '../reducers/blogReducer'
+
 import { Link } from 'react-router-dom'
 
-const Blog = ({ user, blog, handleDelete }) => {
-  const [visible, setVisible] = useState(false)
-  const dispatch = useDispatch()
-
-  const showWhenVisible = { display: visible ? '' : 'none' }
-
-  const showDelete =
-    blog.user.username === user.username ? { display: '' } : { display: 'none' }
-
+const Blog = ({ blog }) => {
   return (
     <div className="blog">
-      <p className="notToggled">
-        <span className="title">
-          <Link to={'/blogs/' + blog.id}>{blog.title}</Link>
-        </span>{' '}
-        <span className="author">{blog.author}</span>
-        <span>
-          <button
-            className="toggle-blog-view"
-            onClick={() => setVisible(!visible)}
-          >
-            {visible ? 'hide' : 'show'}
-          </button>
-        </span>
-      </p>
-
-      <div className="toggled" style={showWhenVisible}>
-        <div>{blog.url}</div>
-        <div>
-          likes {blog.likes}
-          <span>
-            <button
-              className="likeButton"
-              onClick={() => dispatch(likeBlog(blog))}
-            >
-              like
-            </button>
-          </span>
-        </div>
-        <div>{blog.user.username}</div>
-        <button
-          className="deleteButton"
-          style={showDelete}
-          onClick={() => handleDelete(blog)}
-        >
-          delete
-        </button>
-      </div>
+      <Link to={'/blogs/' + blog.id}>{blog.title}</Link>
     </div>
   )
 }
 
 Blog.propTypes = {
   blog: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
 }
 
 export default Blog

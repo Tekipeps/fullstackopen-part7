@@ -7,6 +7,7 @@ import Togglable from './components/Togglable'
 import { Link, Switch, Route, useRouteMatch } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { initializeBlogs, deleteBlog, createBlog } from './reducers/blogReducer'
+import { Navbar, Nav } from 'react-bootstrap'
 import {
   checkLoggedInUser,
   loginUser,
@@ -83,53 +84,62 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification type={notification.type} message={notification.message} />
-      <p>
-        {user.username} logged in{' '}
-        <button
-          onClick={() => {
-            dispatch(logoutUser())
-          }}
-        >
-          Logout
-        </button>
-      </p>
-      <div>
-        <Link to="/" style={{ padding: '10px' }}>
-          home
-        </Link>
-        <Link to="/users" style={{ padding: '10px' }}>
-          users
-        </Link>
-      </div>
-      <Switch>
-        <Route exact path="/">
-          <h2>create new</h2>
-          <Togglable buttonLabel="New Blog" ref={blogFormRef}>
-            <NewBlogForm newBlog={newBlog} />
-          </Togglable>
+    <div className="container">
+      <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-navbar">
+          <Nav className="mr-auto">
+            <Nav.Link href="#" as="span">
+              <Link to="/">blogs</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <Link to="/users">users</Link>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <em>{user.username} logged in</em>
+            </Nav.Link>
+            <Nav.Link href="#" as="span">
+              <button
+                onClick={() => {
+                  dispatch(logoutUser())
+                }}
+              >
+                Logout
+              </button>
+            </Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <div className="app_body">
+        <h2>blog app</h2>
+        <Notification type={notification.type} message={notification.message} />
+        <Switch>
+          <Route exact path="/">
+            <h2>create new</h2>
+            <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+              <NewBlogForm newBlog={newBlog} />
+            </Togglable>
 
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleDelete={handleDelete}
-              user={user}
-            />
-          ))}
-        </Route>
-        <Route path="/users/:id">
-          <SingleUserView userById={() => userById(userMatch.params.id)} />
-        </Route>
-        <Route path="/users">
-          <UsersView />
-        </Route>
-        <Route path="/blogs/:id">
-          <SingleBlogView blogById={() => blogById(blogMatch.params.id)} />
-        </Route>
-      </Switch>
+            {blogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                handleDelete={handleDelete}
+                user={user}
+              />
+            ))}
+          </Route>
+          <Route path="/users/:id">
+            <SingleUserView userById={() => userById(userMatch.params.id)} />
+          </Route>
+          <Route path="/users">
+            <UsersView />
+          </Route>
+          <Route path="/blogs/:id">
+            <SingleBlogView blogById={() => blogById(blogMatch.params.id)} />
+          </Route>
+        </Switch>
+      </div>
     </div>
   )
 }
